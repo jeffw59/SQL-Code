@@ -1,0 +1,37 @@
+USE [voucher]
+GO
+/****** Object:  StoredProcedure [dbo].[update_vouchers]    Script Date: 09/09/2016 10:33:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER  procedure [dbo].[update_vouchers]
+as
+
+--Step 1 Update local database voucher table with values from Mornington where they are higher
+update lv set lv.uses = rv.uses from wastevouchers lv join [172.16.1.167].voucher.dbo.WasteVouchers rv on rv.[waste voucher] = lv.[waste voucher] 
+where rv.uses > lv.uses
+
+--Step 2 Update local database voucher table with values from Tyabb where they are higher
+update lv set lv.uses = rv.uses from wastevouchers lv join [192.168.62.1].voucher.dbo.WasteVouchers rv on rv.[waste voucher] = lv.[waste voucher] 
+where rv.uses > lv.uses
+
+--Step 3 Update local database voucher table with values from Rye where they are higher
+--update lv set lv.uses = rv.uses from wastevouchers lv join [192.168.60.1].voucher.dbo.WasteVouchers rv on rv.[waste voucher] = lv.[waste voucher] 
+--where rv.uses > lv.uses
+
+
+--Step4 Once we have the highest use values for each voucher go back and update each site with the highest values. Mornington
+update rv set rv.uses = lv.uses from [172.16.1.167].voucher.dbo.WasteVouchers rv join WasteVouchers lv on lv.[waste voucher] = rv.[waste voucher] 
+where lv.uses > rv.uses
+
+
+--Step5 Once we have the highest use values for each voucher go back and update each site with the highest values. Tyabb
+update rv set rv.uses = lv.uses from [192.168.62.1].voucher.dbo.WasteVouchers rv join WasteVouchers lv on lv.[waste voucher] = rv.[waste voucher] 
+where lv.uses > rv.uses
+
+
+--Step6 Once we have the highest use values for each voucher go back and update each site with the highest values. Rye
+--update rv set rv.uses = lv.uses from [192.168.60.1].voucher.dbo.WasteVouchers rv join WasteVouchers lv on lv.[waste voucher] = rv.[waste voucher] 
+--where lv.uses > rv.uses
+
